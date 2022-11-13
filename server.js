@@ -7,11 +7,13 @@ const secret   = process.env.PROXY_SECRET_KEY
 
 const delay = (ms = 1000) => new Promise((rs, _) => setTimeout(rs, ms))
 
-let socketCache = {
+const DEFAULT_SOCKET = {
   write  : () => console.log('Socket not initialized!'),
   pause  : () => console.log('Socket not initialized!'),
   resume : () => console.log('Socket not initialized!')
 }
+
+let socketCache = DEFAULT_SOCKET
 
 // creates the server
 const server = net.createServer()
@@ -56,21 +58,6 @@ server.on('connection', (socket) => {
 
   socketCache = socket
 
-  emitter.on('data', async (data) => {
-    console.log('Received data from emitter:', data)
-
-    const isBufferFull = socket.write(data)
-
-    if (isBufferFull) {
-      console.log('Data written from kernel buffer!')
-    } else {
-      console.log('Write buffer is full!')
-      socket.pause()
-    }
-
-    await delay(2000)
-  })
-
   console.log('Buffer size : ' + writableLength)
   console.log('---------server details -----------------')
 
@@ -110,6 +97,8 @@ server.on('connection', (socket) => {
     console.log('Bytes written:', bytesWritten)
     
     emitter.emit('data', data)
+
+    await delay(2000)
   })
 
   socket.on('drain', () => {
@@ -128,6 +117,7 @@ server.on('connection', (socket) => {
   })
 
   socket.on('end', (data) => {
+    socketCache = DEFAULT_SOCKET
     console.log('Client terminated socket!');
     console.log('End data:', data)
   })

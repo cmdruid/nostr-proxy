@@ -133,6 +133,8 @@ server.on('listening', () => {
   emitter.on('newconn', () => {
     console.log('New nostr client connected!')
   })
+
+  emitter.emit('newconn', 'connected!')
 })
 
 server.maxConnections = 10

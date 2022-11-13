@@ -7,12 +7,31 @@ const secret   = process.env.SECRET_KEY
 
 const delay = (ms = 1000) => new Promise((rs, _) => setTimeout(rs, ms))
 
+let socketCache = {
+  write  : () => console.log('Socket not initialized!'),
+  pause  : () => console.log('Socket not initialized!'),
+  resume : () => console.log('Socket not initialized!')
+}
+
 // creates the server
 const server = net.createServer()
 const emitter = new NostrEmitter()
 
 emitter.on('newconn', () => {
   console.log('New nostr client connected!')
+})
+
+emitter.on('data', (data) => {
+  console.log('Received data from emitter:', data)
+
+  const isBufferFull = socketCache.write(data)
+
+  if (isBufferFull) {
+    console.log('Data written from kernel buffer!')
+  } else {
+    console.log('Write buffer is full!')
+    socketCache.pause()
+  }
 })
 
 server.on('close', () => {
@@ -35,20 +54,7 @@ server.on('connection', (socket) => {
     writableLength
   } = socket
 
-  emitter.on('data', (data) => {
-    console.log('Received data from emitter:', data)
-    
-    socket.resume()
-    
-    const isBufferFull = socket.write(data)
-
-    if (isBufferFull) {
-      console.log('Data written from kernel buffer!')
-    } else {
-      console.log('Write buffer is full!')
-      socket.pause()
-    }
-  })
+  socketCache = socket
 
   console.log('Buffer size : ' + writableLength)
   console.log('---------server details -----------------')

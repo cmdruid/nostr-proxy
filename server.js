@@ -5,6 +5,8 @@ import net from 'net'
 const relayUrl = process.env.RELAY_URL
 const secret   = process.env.SECRET_KEY
 
+const delay = (ms = 1000) => new Promise((rs, _) => setTimeout(rs, ms))
+
 // creates the server
 const server = net.createServer()
 const emitter = new NostrEmitter()
@@ -73,7 +75,7 @@ server.on('connection', (socket) => {
     console.log('Socket timed out')
   })
 
-  socket.on('data', (data) => {
+  socket.on('data', async (data) => {
     const { bytesRead, bytesWritten } = socket
 
     console.log('Received data from socket:', data)
@@ -81,6 +83,7 @@ server.on('connection', (socket) => {
     console.log('Bytes written:', bytesWritten)
     
     emitter.emit('data', data)
+    await delay(2000)
   })
 
   socket.on('drain', () => {

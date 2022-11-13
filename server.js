@@ -21,18 +21,18 @@ emitter.on('newconn', () => {
   console.log('New nostr client connected!')
 })
 
-// emitter.on('data', (data) => {
-//   console.log('Received data from emitter:', data)
+emitter.on('data', (data) => {
+  console.log('Received data from emitter:', data)
 
-//   const isBufferFull = socketCache.write(data)
+  const isBufferFull = socketCache.write(data)
 
-//   if (isBufferFull) {
-//     console.log('Data written from kernel buffer!')
-//   } else {
-//     console.log('Write buffer is full!')
-//     socketCache.pause()
-//   }
-// })
+  if (isBufferFull) {
+    console.log('Data written from kernel buffer!')
+  } else {
+    console.log('Write buffer is full!')
+    socketCache.pause()
+  }
+})
 
 server.on('close', () => {
   // Emitted when all connections are closed.
@@ -56,7 +56,7 @@ server.on('connection', (socket) => {
 
   socketCache = socket
 
-  emitter.on('data', (data) => {
+  emitter.on('data', async (data) => {
     console.log('Received data from emitter:', data)
 
     const isBufferFull = socket.write(data)
@@ -67,6 +67,8 @@ server.on('connection', (socket) => {
       console.log('Write buffer is full!')
       socket.pause()
     }
+
+    await delay(2000)
   })
 
   console.log('Buffer size : ' + writableLength)

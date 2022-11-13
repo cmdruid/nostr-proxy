@@ -95,10 +95,7 @@ server.on('connection', (socket) => {
     console.log('Bytes written:', bytesWritten)
     
     emitter.emit('data', data)
-
-    socket.pause()
-
-    await delay(2000)
+    
   })
 
   socket.on('drain', () => {

@@ -32,7 +32,7 @@ server.on('connection', (socket) => {
   emitter.on('data', (data) => {
     console.log('Received data from emitter:', data)
 
-    const isBufferFull = sendDatasocket.write(data)
+    const isBufferFull = socket.write(data)
 
     if (isBufferFull) {
       console.log('Data written from kernel buffer!')

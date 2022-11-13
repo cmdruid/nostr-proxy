@@ -18,9 +18,6 @@ server.on('close', () => {
 server.on('connection', (socket) => {
   // Emitted when a new client is connected.
 
-  console.log('socket:', socket)
-  console.log('server:', server)
-
   const { 
     localPort, 
     localAddress, 
@@ -29,6 +26,21 @@ server.on('connection', (socket) => {
     remoteFamily,
     writableLength
   } = socket
+
+  emitter.emit('newconn', 'connected!')
+
+  emitter.on('data', (data) => {
+    console.log('Received data from emitter:', data)
+
+    const isBufferFull = sendDatasocket.write(data)
+
+    if (isBufferFull) {
+      console.log('Data written from kernel buffer!')
+    } else {
+      console.log('Write buffer is full!')
+      socket.pause()
+    }
+  })
 
   console.log('Buffer size : ' + writableLength)
   console.log('---------server details -----------------')
@@ -52,19 +64,6 @@ server.on('connection', (socket) => {
     console.log('Number of concurrent connections to the server : ' + count)
   })
 
-  emitter.on('data', (data) => {
-    console.log('Received data:', data)
-
-    const isBufferFull = socket.write(data)
-
-    if (isBufferFull) {
-      console.log('Data written from kernel buffer!')
-    } else {
-      console.log('Write buffer is full!')
-      socket.pause()
-    }
-  })
-
   // Set the character encoding.
   socket.setEncoding('utf8')
 
@@ -77,7 +76,7 @@ server.on('connection', (socket) => {
   socket.on('data', (data) => {
     const { bytesRead, bytesWritten } = socket
 
-    console.log('Received data:', data)
+    console.log('Received data from socket:', data)
     console.log('Bytes read:', bytesRead)
     console.log('Bytes written:', bytesWritten)
     
@@ -130,6 +129,10 @@ server.on('error', (error) => {
 server.on('listening', () => {
   console.log('Server is listening!')
   emitter.connect(relayUrl, secret)
+
+  emitter.on('newconn', () => {
+    console.log('New nostr client connected!')
+  })
 })
 
 server.maxConnections = 10

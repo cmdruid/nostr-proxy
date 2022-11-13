@@ -20,6 +20,8 @@ server.on('close', () => {
 server.on('connection', (socket) => {
   // Emitted when a new client is connected.
 
+  emitter.emit('newconn', 'connected!')
+
   const { 
     localPort, 
     localAddress, 
@@ -28,8 +30,6 @@ server.on('connection', (socket) => {
     remoteFamily,
     writableLength
   } = socket
-
-  emitter.emit('newconn', 'connected!')
 
   emitter.on('data', (data) => {
     console.log('Received data from emitter:', data)
@@ -131,12 +131,13 @@ server.on('error', (error) => {
 
 server.on('listening', async () => {
   console.log('Server is listening!')
-  await emitter.connect(relayUrl, secret)
 
   emitter.on('newconn', () => {
     console.log('New nostr client connected!')
   })
 
+  await emitter.connect(relayUrl, secret)
+ 
   emitter.emit('newconn', 'connected!')
 })
 

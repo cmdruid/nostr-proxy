@@ -126,9 +126,9 @@ server.on('error', (error) => {
   console.log('Error:', error)
 })
 
-server.on('listening', () => {
+server.on('listening', async () => {
   console.log('Server is listening!')
-  emitter.connect(relayUrl, secret)
+  await emitter.connect(relayUrl, secret)
 
   emitter.on('newconn', () => {
     console.log('New nostr client connected!')

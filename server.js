@@ -2,8 +2,8 @@ import NostrEmitter from '@cmdcode/nostr-emitter'
 
 import net from 'net'
 
-const relayUrl = 'nostr-relay.wlvs.space'
-const secret   = 'thisisasupersecrettest!'
+const relayUrl = process.env.RELAY_URL
+const secret   = process.env.SECRET_KEY
 
 // creates the server
 const server = net.createServer()
@@ -123,12 +123,10 @@ server.on('connection', (socket) => {
   }, 1200000)
 })
 
-// emits when any error occurs -> calls closed event immediately after this.
 server.on('error', (error) => {
   console.log('Error:', error)
-});
+})
 
-//emits when server is bound with server.listen
 server.on('listening', () => {
   console.log('Server is listening!')
   emitter.connect(relayUrl, secret)

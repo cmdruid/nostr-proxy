@@ -2,8 +2,8 @@ import NostrEmitter from '@cmdcode/nostr-emitter'
 
 import net from 'net'
 
-const relayUrl = process.env.RELAY_URL
-const secret   = process.env.SECRET_KEY
+const relayUrl = process.env.PROXY_RELAY_URL
+const secret   = process.env.PROXY_SECRET_KEY
 
 const delay = (ms = 1000) => new Promise((rs, _) => setTimeout(rs, ms))
 
@@ -95,7 +95,7 @@ server.on('connection', (socket) => {
     console.log('Bytes written:', bytesWritten)
     
     emitter.emit('data', data)
-    
+
   })
 
   socket.on('drain', () => {

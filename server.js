@@ -11,6 +11,10 @@ const delay = (ms = 1000) => new Promise((rs, _) => setTimeout(rs, ms))
 const server = net.createServer()
 const emitter = new NostrEmitter()
 
+emitter.on('newconn', () => {
+  console.log('New nostr client connected!')
+})
+
 server.on('close', () => {
   // Emitted when all connections are closed.
   console.log('Server closed!')
@@ -33,7 +37,9 @@ server.on('connection', (socket) => {
 
   emitter.on('data', (data) => {
     console.log('Received data from emitter:', data)
-
+    
+    socket.resume()
+    
     const isBufferFull = socket.write(data)
 
     if (isBufferFull) {
@@ -83,6 +89,9 @@ server.on('connection', (socket) => {
     console.log('Bytes written:', bytesWritten)
     
     emitter.emit('data', data)
+
+    socket.pause()
+
     await delay(2000)
   })
 
@@ -131,13 +140,7 @@ server.on('error', (error) => {
 
 server.on('listening', async () => {
   console.log('Server is listening!')
-
-  emitter.on('newconn', () => {
-    console.log('New nostr client connected!')
-  })
-
   await emitter.connect(relayUrl, secret)
- 
   emitter.emit('newconn', 'connected!')
 })
 

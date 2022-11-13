@@ -1,0 +1,16 @@
+{
+  "name": "nostr-proxy",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Proxy any TCP connection over Nostr.",
+  "main": "index.js",
+  "author": "Christopher Scott",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@cmdcode/buff-utils": "^1.1.4",
+    "@cmdcode/nostr-emitter": "^1.1.15"
+  }
+}

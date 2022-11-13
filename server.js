@@ -26,14 +26,16 @@ emitter.on('newconn', () => {
 emitter.on('data', (data) => {
   console.log('Received data from emitter:', data)
 
-  const isBufferFull = socketCache.write(data)
+  //const isBufferFull = 
+  
+  socketCache.write(data)
 
-  if (isBufferFull) {
-    console.log('Data written from kernel buffer!')
-  } else {
-    console.log('Write buffer is full!')
-    socketCache.pause()
-  }
+  // if (isBufferFull) {
+  //   console.log('Data written from kernel buffer!')
+  // } else {
+  //   console.log('Write buffer is full!')
+  //   socketCache.pause()
+  // }
 })
 
 server.on('close', () => {
